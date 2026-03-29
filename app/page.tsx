@@ -114,9 +114,9 @@ function Header() {
         <div className="logo">
           <div className="logo-icon">
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="14" r="13" stroke="#26A17B" strokeWidth="1.5" fill="none"/>
-              <circle cx="14" cy="14" r="7" fill="#26A17B" opacity="0.15"/>
-              <circle cx="14" cy="14" r="3" fill="#26A17B"/>
+              <circle cx="14" cy="14" r="13" stroke="#50AF95" strokeWidth="1.5" fill="none"/>
+              <circle cx="14" cy="14" r="7" fill="#50AF95" opacity="0.15"/>
+              <circle cx="14" cy="14" r="3" fill="#50AF95"/>
             </svg>
           </div>
           <span className="logo-text">
@@ -177,9 +177,9 @@ function UploadZone({ onImageUpload, isLoading }: { onImageUpload: (file: string
           <div className="spinner"></div>
         ) : (
           <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
-            <rect x="6" y="10" width="36" height="28" rx="4" stroke="#26A17B" strokeWidth="1.5" fill="none"/>
-            <circle cx="17" cy="21" r="4" stroke="#26A17B" strokeWidth="1.5"/>
-            <path d="M6 32l10-10 8 8 10-12 8 10" stroke="#26A17B" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+            <rect x="6" y="10" width="36" height="28" rx="4" stroke="#50AF95" strokeWidth="1.5" fill="none"/>
+            <circle cx="17" cy="21" r="4" stroke="#50AF95" strokeWidth="1.5"/>
+            <path d="M6 32l10-10 8 8 10-12 8 10" stroke="#50AF95" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         )}
       </div>
@@ -220,7 +220,7 @@ function TraitBar({ label, value, color }: { label: string; value: number; color
 
 // Results
 function Results({ result, image, onReset }: { result: CharacterResult; image: string; onReset: () => void }) {
-  const traitColors = ["#26A17B", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
+  const traitColors = ["#50AF95", "#3b82f6", "#f59e0b", "#ef4444", "#8b5cf6"];
   return (
     <div className="results-container">
       <div className="result-card">
@@ -361,8 +361,8 @@ export default function Home() {
         <div className="footer-inner">
           <div className="footer-brand">
             <svg width="20" height="20" viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="14" r="13" stroke="#26A17B" strokeWidth="1.5" fill="none"/>
-              <circle cx="14" cy="14" r="3" fill="#26A17B"/>
+              <circle cx="14" cy="14" r="13" stroke="#50AF95" strokeWidth="1.5" fill="none"/>
+              <circle cx="14" cy="14" r="3" fill="#50AF95"/>
             </svg>
             © 2026 Anime Character Analyzer
           </div>
