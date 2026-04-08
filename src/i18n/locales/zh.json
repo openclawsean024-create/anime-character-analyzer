@@ -34,5 +34,8 @@
   "animeRequired": "請選擇動漫",
   "copied": "已複製到剪貼簿！",
   "home": "首頁",
-  "settings": "設定"
+  "uploadImage": "上傳角色圖片（可選）",
+  "uploadBtn": "上傳圖片",
+  "pasteImage": "貼上圖片",
+  "imageHint": "支援 JPG/PNG，最大 5MB"
 }

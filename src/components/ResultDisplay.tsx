@@ -1,5 +1,5 @@
 import { useTranslation } from 'react-i18next';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, Sparkles } from 'lucide-react';
 import { useState } from 'react';
 import type { AnimeAnalyzer, Character } from '../data/animeData';
 
@@ -8,6 +8,20 @@ interface Props {
   analyzer: AnimeAnalyzer;
   result: Character[];
   onClose: () => void;
+}
+
+function getMatchClass(index: number): string {
+  if (index === 0) return 'top';
+  if (index === 1) return 'second';
+  if (index === 2) return 'third';
+  return 'other';
+}
+
+function getBarClass(index: number): string {
+  if (index === 0) return 'breakdown-bar-fill top-match';
+  if (index === 1) return 'breakdown-bar-fill second-match';
+  if (index === 2) return 'breakdown-bar-fill';
+  return 'breakdown-bar-fill other-match';
 }
 
 export default function ResultDisplay({ name, analyzer, result, onClose }: Props) {
@@ -24,45 +38,98 @@ export default function ResultDisplay({ name, analyzer, result, onClose }: Props
 
   return (
     <div className="space-y-6 animate-fadeIn">
+      {/* Page header */}
       <div className="text-center">
-        <h2 className="text-xl font-bold text-white mb-1">{t('yourResult')}</h2>
-        <p className="text-white/60 text-sm">{analyzer.name} — {name}</p>
+        <h2 className="text-xl font-bold text-white mb-1 font-logo">{t('yourResult')}</h2>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.875rem' }}>
+          {analyzer.name} — {name}
+        </p>
       </div>
 
-      <div className="bg-white/10 backdrop-blur-sm rounded-2xl p-6 border border-white/20">
-        <div className="flex items-center justify-between mb-6">
+      {/* Result card */}
+      <div className="result-card">
+        <div className="result-header">
           <div>
-            <div className="text-xs text-white/60 uppercase tracking-wider">{analyzer.animeName}</div>
-            <div className="text-2xl font-black text-white">{analyzer.name}</div>
+            <div style={{
+              fontSize: '0.7rem',
+              color: 'var(--text-muted)',
+              textTransform: 'uppercase',
+              letterSpacing: '0.1em',
+              marginBottom: '0.25rem',
+              fontFamily: "'Space Grotesk', sans-serif",
+            }}>
+              {analyzer.animeName}
+            </div>
+            <div style={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 700,
+              fontSize: '1.5rem',
+              color: 'var(--text-primary)',
+            }}>
+              {analyzer.name}
+            </div>
           </div>
-          <div className="flex gap-2">
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
             <button
               onClick={handleCopy}
-              className="p-2 rounded-lg bg-white/10 hover:bg-white/20 transition-all text-white"
+              style={{
+                padding: '0.5rem',
+                borderRadius: '0.625rem',
+                background: 'rgba(255,255,255,0.06)',
+                border: '1px solid var(--border-default)',
+                color: copied ? 'var(--neon-cyan)' : 'var(--text-secondary)',
+                cursor: 'pointer',
+                transition: 'all 0.15s',
+                display: 'flex',
+                alignItems: 'center',
+              }}
               title={t('share')}
             >
-              {copied ? <Check size={18} className="text-green-400" /> : <Copy size={18} />}
+              {copied ? <Check size={16} /> : <Copy size={16} />}
             </button>
           </div>
         </div>
 
-        <div className="space-y-3">
+        {/* Character breakdown */}
+        <div className="space-y-4">
           {result.map((char, i) => (
-            <div key={i} className="space-y-1">
-              <div className="flex justify-between text-sm">
-                <span className="text-white font-medium flex items-center gap-2">
-                  {i === 0 && <span className="text-xs bg-yellow-400 text-yellow-900 px-1.5 py-0.5 rounded font-bold">TOP</span>}
-                  {char.name}
+            <div key={i} style={{ animation: `fadeInUp 0.4s ${i * 0.1}s ease-out both` }}>
+              <div style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '0.5rem',
+              }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                  {i === 0 && (
+                    <span className="match-badge top">
+                      <Sparkles size={10} /> TOP
+                    </span>
+                  )}
+                  {i === 1 && (
+                    <span className="match-badge second">#2</span>
+                  )}
+                  {i === 2 && (
+                    <span className="match-badge third">#3</span>
+                  )}
+                  <span style={{
+                    color: i === 0 ? 'var(--text-primary)' : i === 1 ? 'var(--text-secondary)' : 'var(--text-muted)',
+                    fontWeight: 500,
+                    fontSize: '0.95rem',
+                  }}>
+                    {char.name}
+                  </span>
+                </div>
+                <span className={`match-percentage ${getMatchClass(i)}`} style={{ fontSize: i === 0 ? '1.6rem' : '1.25rem' }}>
+                  {char.percentage}%
                 </span>
-                <span className="text-white/80 font-bold">{char.percentage}%</span>
               </div>
-              <div className="h-2 bg-white/10 rounded-full overflow-hidden">
+
+              {/* Progress bar */}
+              <div className="breakdown-bar">
                 <div
-                  className="h-full rounded-full transition-all duration-1000"
-                  style={{
-                    width: `${char.percentage}%`,
-                    backgroundColor: char.color,
-                  }}
+                  className={getBarClass(i)}
+                  style={{ width: `${char.percentage}%` }}
                 />
               </div>
             </div>
@@ -70,10 +137,26 @@ export default function ResultDisplay({ name, analyzer, result, onClose }: Props
         </div>
       </div>
 
-      <div className="flex gap-3 justify-center">
+      {/* Conclusion text */}
+      {result[0] && (
+        <div style={{
+          textAlign: 'center',
+          padding: '1.25rem',
+          borderRadius: '1rem',
+          background: 'rgba(0, 229, 200, 0.05)',
+          border: '1px solid rgba(0, 229, 200, 0.12)',
+        }}>
+          <p style={{ color: 'var(--text-primary)', fontWeight: 600, margin: 0 }}>
+            你是{analyzer.animeName}裡的<span style={{ color: 'var(--neon-cyan)' }}>{result[0].name}</span>！
+          </p>
+        </div>
+      )}
+
+      {/* Back button */}
+      <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center' }}>
         <button
           onClick={onClose}
-          className="px-6 py-2.5 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-all border border-white/20"
+          className="btn-secondary"
         >
           {t('backToHome')}
         </button>
