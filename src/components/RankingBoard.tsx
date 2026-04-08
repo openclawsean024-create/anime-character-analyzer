@@ -1,4 +1,3 @@
-import { useTranslation } from 'react-i18next';
 import { Trophy, Clock } from 'lucide-react';
 import type { AnimeAnalyzer } from '../data/animeData';
 
