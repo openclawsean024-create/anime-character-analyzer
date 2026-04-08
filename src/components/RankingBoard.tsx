@@ -31,8 +31,6 @@ function RankBadge({ index }: { index: number }) {
 }
 
 export default function RankingBoard({ analyzers, mode }: Props) {
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-
   const sorted = [...analyzers].sort((a, b) =>
     mode === 'popular' ? b.usageCount - a.usageCount : b.createdAt - a.createdAt
   ).slice(0, 10);
