@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, useRef } from "react";
+import { useSearchParams } from "next/navigation";
 
 interface Character {
   name: string;
@@ -170,7 +171,10 @@ function LeaderboardTab({ lang, allAnalyzers }: { lang: Lang; allAnalyzers: Anal
 }
 
 export default function Home() {
-  const [tab, setTab] = useState<Tab>("analyze");
+  const searchParams = useSearchParams();
+  const tabParam = searchParams.get('tab');
+  const initialTab: Tab = (tabParam === 'create' || tabParam === 'leaderboard') ? tabParam : 'analyze';
+  const [tab, setTab] = useState<Tab>(initialTab);
   const [lang, setLang] = useState<Lang>("zh");
   const [name, setName] = useState("");
   const [selectedId, setSelectedId] = useState(DEFAULT_ANALYZERS[0]?.id ?? "one-piece");
