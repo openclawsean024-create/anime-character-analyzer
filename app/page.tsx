@@ -50,10 +50,19 @@ function analyzeName(name: string, characters: Character[]): AnalysisResult[] {
 
 const STORAGE_KEY = "anime-analyzer-custom";
 const RANKINGS_KEY = "anime-analyzer-rankings";
+const normalizeRankings = (value: unknown) => {
+  const base = { hot: [] as string[], new: [] as string[] };
+  if (!value || typeof value !== "object") return base;
+  const record = value as { hot?: unknown; new?: unknown };
+  return {
+    hot: Array.isArray(record.hot) ? record.hot.filter((v): v is string => typeof v === "string") : [],
+    new: Array.isArray(record.new) ? record.new.filter((v): v is string => typeof v === "string") : [],
+  };
+};
 const loadCustomAnalyzers = (): Analyzer[] => typeof window === "undefined" ? [] : JSON.parse(localStorage.getItem(STORAGE_KEY) || "[]");
 const saveCustomAnalyzers = (list: Analyzer[]) => localStorage.setItem(STORAGE_KEY, JSON.stringify(list));
-const loadRankings = () => typeof window === "undefined" ? { hot: [] as string[], new: [] as string[] } : JSON.parse(localStorage.getItem(RANKINGS_KEY) || '{"hot":[],"new":[]}');
-const saveRankings = (r: { hot: string[]; new: string[] }) => localStorage.setItem(RANKINGS_KEY, JSON.stringify(r));
+const loadRankings = () => typeof window === "undefined" ? { hot: [] as string[], new: [] as string[] } : normalizeRankings(JSON.parse(localStorage.getItem(RANKINGS_KEY) || '{"hot":[],"new":[]}'));
+const saveRankings = (r: { hot: string[]; new: string[] }) => localStorage.setItem(RANKINGS_KEY, JSON.stringify(normalizeRankings(r)));
 
 function Header({ lang, onLang }: { lang: Lang; onLang: (l: Lang) => void }) {
   return <header className="site-header"><div className="header-inner"><div className="logo"><div className="logo-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#00E5C8" strokeWidth="1.5" /><circle cx="14" cy="14" r="7" fill="#00E5C8" opacity="0.15" /><circle cx="14" cy="14" r="3" fill="#00E5C8" /></svg></div><span className="logo-text"><span className="logo-primary">Anime</span><span className="logo-secondary"> Analyzer</span></span></div><div className="lang-toggle"><button className={`lang-btn ${lang === "zh" ? "active" : ""}`} onClick={() => onLang("zh")}>中文</button><button className={`lang-btn ${lang === "en" ? "active" : ""}`} onClick={() => onLang("en")}>EN</button></div></div></header>;
@@ -164,13 +173,13 @@ export default function Home() {
   const [tab, setTab] = useState<Tab>("analyze");
   const [lang, setLang] = useState<Lang>("zh");
   const [name, setName] = useState("");
-  const [selectedId, setSelectedId] = useState("one-piece");
+  const [selectedId, setSelectedId] = useState(DEFAULT_ANALYZERS[0]?.id ?? "one-piece");
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<AnalysisResult[] | null>(null);
   const [customAnalyzers, setCustomAnalyzers] = useState<Analyzer[]>([]);
   useEffect(() => { setCustomAnalyzers(loadCustomAnalyzers()); }, []);
   const allAnalyzers = useMemo(() => [...DEFAULT_ANALYZERS, ...customAnalyzers], [customAnalyzers]);
-  const handleAnalyze = async () => { if (!name.trim()) return; setIsAnalyzing(true); setResults(null); const analyzer = allAnalyzers.find((a) => a.id === selectedId); if (!analyzer) { setIsAnalyzing(false); return; } const isDefault = DEFAULT_ANALYZERS.some((a) => a.id === selectedId); if (!isDefault) { const updated = customAnalyzers.map((a) => a.id === selectedId ? { ...a, useCount: a.useCount + 1 } : a); setCustomAnalyzers(updated); saveCustomAnalyzers(updated); } else { const rankings = loadRankings(); const hot = [selectedId, ...rankings.hot.filter((id: string) => id !== selectedId)].slice(0, 50); saveRankings({ ...rankings, hot }); } await new Promise((r) => setTimeout(r, 800)); setResults(analyzeName(name, analyzer.characters)); setIsAnalyzing(false); };
-  const handleCreated = (a: Analyzer) => { const updated = [a, ...customAnalyzers]; setCustomAnalyzers(updated); saveCustomAnalyzers(updated); const rankings = loadRankings(); const newList = [a.id, ...rankings.new.filter((id: string) => id !== a.id)].slice(0, 50); saveRankings({ ...rankings, new: newList }); setTab("analyze"); setSelectedId(a.id); };
+  const handleAnalyze = async () => { if (!name.trim()) return; setIsAnalyzing(true); setResults(null); const analyzer = allAnalyzers.find((a) => a.id === selectedId); if (!analyzer) { setIsAnalyzing(false); return; } const updatedCustom = customAnalyzers.map((a) => a.id === selectedId ? { ...a, useCount: a.useCount + 1 } : a); if (updatedCustom.length !== customAnalyzers.length || updatedCustom.some((a, i) => a.useCount !== customAnalyzers[i]?.useCount)) { setCustomAnalyzers(updatedCustom); saveCustomAnalyzers(updatedCustom); } const rankings = loadRankings(); const hot = [selectedId, ...rankings.hot.filter((id: string) => id !== selectedId)].slice(0, 50); saveRankings({ ...rankings, hot }); await new Promise((r) => setTimeout(r, 800)); setResults(analyzeName(name, analyzer.characters)); setIsAnalyzing(false); };
+  const handleCreated = (a: Analyzer) => { const updated = [a, ...customAnalyzers]; setCustomAnalyzers(updated); saveCustomAnalyzers(updated); const rankings = loadRankings(); const newList = [a.id, ...rankings.new.filter((id: string) => id !== a.id)].slice(0, 50); saveRankings({ ...rankings, new: newList }); setTab("analyze"); setSelectedId(a.id); setName(""); setResults(null); };
   return <div className="page"><Header lang={lang} onLang={setLang} /><TabBar tab={tab} onTab={setTab} lang={lang} /><main className="main-content">{tab === "analyze" && <AnalyzerTab lang={lang} allAnalyzers={allAnalyzers} selectedId={selectedId} onSelect={setSelectedId} name={name} setName={setName} onAnalyze={handleAnalyze} results={results} isAnalyzing={isAnalyzing} />}{tab === "create" && <CreateTab lang={lang} onCreated={handleCreated} />}{tab === "leaderboard" && <LeaderboardTab lang={lang} allAnalyzers={allAnalyzers} />}</main><footer className="site-footer"><div className="footer-inner"><div className="footer-brand"><svg width="20" height="20" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#00E5C8" strokeWidth="1.5" /><circle cx="14" cy="14" r="3" fill="#00E5C8" /></svg>© 2026 Anime Character Analyzer</div><div className="footer-tagline">Powered by name-hash analysis engine</div></div></footer></div>;
 }
