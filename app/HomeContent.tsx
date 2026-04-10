@@ -39,14 +39,14 @@ function analyzeName(name: string, characters: Character[]): AnalysisResult[] {
   return results.sort((a, b) => b.pct - a.pct);
 }
 
-function Header({ lang, onLang }: { lang: Lang; onLang: (l: Lang) => void }) {
-  return <header className="site-header"><div className="header-inner"><div className="logo"><div className="logo-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#00E5C8" strokeWidth="1.5" /><circle cx="14" cy="14" r="7" fill="#00E5C8" opacity="0.15" /><circle cx="14" cy="14" r="3" fill="#00E5C8" /></svg></div><span className="logo-text"><span className="logo-primary">Anime</span><span className="logo-secondary"> Analyzer</span></span></div><div className="lang-toggle"><button className={`lang-btn ${lang === "zh" ? "active" : ""}`} onClick={() => onLang("zh")}>中文</button><button className={`lang-btn ${lang === "en" ? "active" : ""}`} onClick={() => onLang("en")}>EN</button></div></div></header>;
+function Header({ lang, onLang, active }: { lang: Lang; onLang: (l: Lang) => void; active?: string }) {
+  return <header className="site-header"><div className="header-inner"><div className="logo"><div className="logo-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><circle cx="14" cy="14" r="13" stroke="#00E5C8" strokeWidth="1.5" /><circle cx="14" cy="14" r="7" fill="#00E5C8" opacity="0.15" /><circle cx="14" cy="14" r="3" fill="#00E5C8" /></svg></div><span className="logo-text"><span className="logo-primary">Anime</span><span className="logo-secondary"> Analyzer</span></span></div><nav className="nav-links"><a href="/" className={`nav-link${active === '/' ? ' active' : ''}`}>{lang === "zh" ? "分析" : "Analyze"}</a><a href="/create" className={`nav-link${active === '/create' ? ' active' : ''}`}>{lang === "zh" ? "創建" : "Create"}</a><a href="/leaderboard" className={`nav-link${active === '/leaderboard' ? ' active' : ''}`}>{lang === "zh" ? "排行榜" : "Ranking"}</a></nav><div className="lang-toggle"><button className={`lang-btn ${lang === "zh" ? "active" : ""}`} onClick={() => onLang("zh")}>中文</button><button className={`lang-btn ${lang === "en" ? "active" : ""}`} onClick={() => onLang("en")}>EN</button></div></div></header>;
 }
 
 function CreateContent({ lang }: { lang: Lang }) {
   return (
     <div className="page">
-      <Header lang={lang} onLang={() => {}} />
+      <Header lang={lang} onLang={() => {}} active="/create" />
       <main className="main-content" style={{ padding: "4rem 2rem" }}>
         <section style={{ maxWidth: 920, margin: "0 auto" }}>
           <h1 style={{ fontSize: "2.25rem", fontWeight: 800, marginBottom: "1rem" }}>
@@ -70,7 +70,7 @@ function CreateContent({ lang }: { lang: Lang }) {
 function LeaderboardContent({ lang }: { lang: Lang }) {
   return (
     <div className="page">
-      <Header lang={lang} onLang={() => {}} />
+      <Header lang={lang} onLang={() => {}} active="/leaderboard" />
       <main className="main-content" style={{ padding: "4rem 2rem" }}>
         <section style={{ maxWidth: 920, margin: "0 auto" }}>
           <h1 style={{ fontSize: "2.25rem", fontWeight: 800, marginBottom: "1rem" }}>
@@ -127,5 +127,5 @@ export default function HomeContent() {
 
   const onAnalyze = async () => { if (!name.trim()) return; setIsAnalyzing(true); await new Promise((r) => setTimeout(r, 500)); setResults(analyzeName(name, analyzer.characters)); setIsAnalyzing(false); };
 
-  return <div className="page"><Header lang={lang} onLang={setLang} /><main className="main-content"><section className="hero-section"><canvas ref={canvasRef} className="hero-particles" /><div className="hero-inner"><div className="hero-badge"><span className="dot" />{lang === "zh" ? "動漫角色分析器" : "Anime Analyzer"}</div><h1 className="hero-title">{lang === "zh" ? <>測測你是哪個<br /><span className="text-gradient">動漫角色</span></> : <>Discover your<br /><span className="text-gradient">anime character</span></>}</h1><p className="hero-sub">{lang === "zh" ? "輸入名字，立即生成角色分析結果。" : "Enter a name to get your anime character match."}</p><div className="hero-cta"><input className="hero-quick-input" placeholder={lang === "zh" ? "輸入名字..." : "Type your name..."} value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && onAnalyze()} /><button className="btn-hero" onClick={onAnalyze}>{isAnalyzing ? "..." : (lang === "zh" ? "開始分析" : "Analyze")}</button></div>{results && <div className="card" style={{ marginTop: 24, textAlign: "left" }}><p style={{ color: "var(--text-secondary)" }}>{results[0].character.name} {results[0].pct}%</p></div>}</div></section></main></div>;
+  return <div className="page"><Header lang={lang} onLang={setLang} active="/" /><main className="main-content"><section className="hero-section"><canvas ref={canvasRef} className="hero-particles" /><div className="hero-inner"><div className="hero-badge"><span className="dot" />{lang === "zh" ? "動漫角色分析器" : "Anime Analyzer"}</div><h1 className="hero-title">{lang === "zh" ? <>測測你是哪個<br /><span className="text-gradient">動漫角色</span></> : <>Discover your<br /><span className="text-gradient">anime character</span></>}</h1><p className="hero-sub">{lang === "zh" ? "輸入名字，立即生成角色分析結果。" : "Enter a name to get your anime character match."}</p><div className="hero-cta"><input className="hero-quick-input" placeholder={lang === "zh" ? "輸入名字..." : "Type your name..."} value={name} onChange={(e) => setName(e.target.value)} onKeyDown={(e) => e.key === "Enter" && onAnalyze()} /><button className="btn-hero" onClick={onAnalyze}>{isAnalyzing ? "..." : (lang === "zh" ? "開始分析" : "Analyze")}</button></div>{results && <div className="card" style={{ marginTop: 24, textAlign: "left" }}><p style={{ color: "var(--text-secondary)" }}>{results[0].character.name} {results[0].pct}%</p></div>}</div></section></main></div>;
 }
