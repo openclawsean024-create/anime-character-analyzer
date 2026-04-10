@@ -1,32 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { DEFAULT_ANALYZERS, type Analyzer } from "../lib/analyzers";
 
 type Lang = "zh" | "en";
 type LbTab = "hot" | "new";
-
-interface Analyzer {
-  id: string;
-  name: string;
-  nameEn: string;
-  emoji: string;
-  characters: { name: string; emoji: string }[];
-  createdAt: number;
-  useCount: number;
-}
-
-const DEFAULT_ANALYZERS: Analyzer[] = [
-  { id: "one-piece", name: "海賊王", nameEn: "One Piece", emoji: "🏴‍☠️", characters: Array(10).fill({ name: "", emoji: "👤" }), createdAt: Date.now(), useCount: 847 },
-  { id: "naruto", name: "火影忍者", nameEn: "Naruto", emoji: "🍥", characters: Array(10).fill({ name: "", emoji: "👤" }), createdAt: Date.now(), useCount: 623 },
-  { id: "demon-slayer", name: "鬼滅之刃", nameEn: "Demon Slayer", emoji: "⚔️", characters: Array(10).fill({ name: "", emoji: "👤" }), createdAt: Date.now(), useCount: 512 },
-  { id: "attack-on-titan", name: "進擊的巨人", nameEn: "Attack on Titan", emoji: "🔶", characters: Array(10).fill({ name: "", emoji: "👤" }), createdAt: Date.now(), useCount: 398 },
-  { id: "sword-art-online", name: "刀劍神域", nameEn: "Sword Art Online", emoji: "🗡️", characters: Array(10).fill({ name: "", emoji: "👤" }), createdAt: Date.now(), useCount: 334 },
-  { id: "death-note", name: "死亡筆記本", nameEn: "Death Note", emoji: "📓", characters: Array(10).fill({ name: "", emoji: "👤" }), createdAt: Date.now(), useCount: 287 },
-  { id: "jujutsu-kaisen", name: "咒術迴戰", nameEn: "Jujutsu Kaisen", emoji: "👊", characters: Array(10).fill({ name: "", emoji: "👤" }), createdAt: Date.now(), useCount: 256 },
-  { id: "one-punch-man", name: "一拳超人", nameEn: "One Punch Man", emoji: "💥", characters: Array(10).fill({ name: "", emoji: "👤" }), createdAt: Date.now(), useCount: 219 },
-  { id: "spy-x-family", name: "間諜過家家", nameEn: "Spy x Family", emoji: "🕵️", characters: Array(10).fill({ name: "", emoji: "👤" }), createdAt: Date.now(), useCount: 178 },
-  { id: "chainsaw-man", name: "鏈鋸人", nameEn: "Chainsaw Man", emoji: "⛓️", characters: Array(10).fill({ name: "", emoji: "👤" }), createdAt: Date.now(), useCount: 145 },
-];
 
 const normalizeRankings = (value: unknown) => {
   const base = { hot: [] as string[], new: [] as string[] };

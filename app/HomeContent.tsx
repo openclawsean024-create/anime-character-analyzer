@@ -2,32 +2,18 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
+import { DEFAULT_ANALYZERS } from "./lib/analyzers";
 
 interface Character {
   name: string;
   emoji: string;
-  description: string;
-}
-
-interface Analyzer {
-  id: string;
-  name: string;
-  nameEn: string;
-  emoji: string;
-  characters: Character[];
-  createdAt: number;
-  useCount: number;
+  description?: string;
 }
 
 type Lang = "zh" | "en";
 
-const DEFAULT_ANALYZERS: Analyzer[] = [
-  { id: "one-piece", name: "海賊王", nameEn: "One Piece", emoji: "🏴‍☠️", characters: [{ name: "魯夫", emoji: "😁", description: "" }, { name: "索隆", emoji: "⚔️", description: "" }, { name: "娜美", emoji: "🗺️", description: "" }, { name: "烏索普", emoji: "🎯", description: "" }, { name: "香吉士", emoji: "🍳", description: "" }, { name: "喬巴", emoji: "🦌", description: "" }, { name: "羅賓", emoji: "📚", description: "" }, { name: "佛朗基", emoji: "🔧", description: "" }, { name: "布魯克", emoji: "💀", description: "" }, { name: "吉貝爾", emoji: "🐟", description: "" }], createdAt: Date.now(), useCount: 0 },
-  { id: "naruto", name: "火影忍者", nameEn: "Naruto", emoji: "🍥", characters: [{ name: "漩渦鳴人", emoji: "🐦", description: "" }, { name: "宇智波佐助", emoji: "🔥", description: "" }, { name: "春野櫻", emoji: "🌸", description: "" }, { name: "卡卡西", emoji: "🐱", description: "" }, { name: "薩克羅", emoji: "⚡", description: "" }, { name: "綱手", emoji: "💪", description: "" }, { name: "自來也", emoji: "🐸", description: "" }, { name: "我愛羅", emoji: "🏜️", description: "" }, { name: "日向雛田", emoji: "🥀", description: "" }, { name: "波風湊", emoji: "🌊", description: "" }], createdAt: Date.now(), useCount: 0 },
-];
-
 interface AnalysisResult { character: Character; pct: number; }
-function analyzeName(name: string, characters: Character[]): AnalysisResult[] {
+function analyzeName(name: string, characters: { name: string; emoji: string; description?: string }[]): AnalysisResult[] {
   const n = name.trim().toLowerCase().replace(/\s/g, "");
   if (!n) return [];
   const seed = n.split("").reduce((acc, c) => acc + c.charCodeAt(0), 0);
