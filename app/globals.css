@@ -556,6 +556,22 @@ body {
   color: var(--text-muted);
 }
 
+@keyframes bar-appear {
+  from { opacity: 0; transform: translateX(-8px); }
+  to { opacity: 1; transform: translateX(0); }
+}
+.bar-row {
+  animation: bar-appear 0.4s ease both;
+}
+
+/* ---- Analyzer Selector responsive ---- */
+.analyzer-pills { display: flex; }
+.analyzer-dropdown-wrap { display: none; }
+@media (max-width: 640px) {
+  .analyzer-pills { display: none; }
+  .analyzer-dropdown-wrap { display: block; }
+}
+
 /* ---- Result Card ---- */
 .result-card {
   overflow: hidden;

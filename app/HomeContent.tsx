@@ -80,39 +80,89 @@ function Header({
 
 function Top5BarChart({ results, lang }: { results: AnalysisResult[]; lang: Lang }) {
   const top5 = results.slice(0, 5);
+  const medals = ["🥇", "🥈", "🥉", "④", "⑤"];
+  const barColors = [
+    "linear-gradient(90deg, #FFD700, #FFA500)",
+    "linear-gradient(90deg, #C0C0C0, #A8A8A8)",
+    "linear-gradient(90deg, #CD7F32, #A0522D)",
+    "linear-gradient(90deg, #50AF95, #3D9C82)",
+    "linear-gradient(90deg, #50AF95, #3D9C82)",
+  ];
+  const textColors = ["#FFD700", "#C0C0C0", "#CD7F32", "var(--accent)", "var(--accent)"];
+
   return (
-    <div className="card" style={{ marginTop: 24, padding: "1.5rem" }}>
-      <p className="card-title" style={{ marginBottom: "1rem", color: "var(--accent)", fontWeight: 700, fontSize: "0.9rem", letterSpacing: "0.05em" }}>
-        {lang === "zh" ? "分析結果 Top 5" : "Analysis Result Top 5"}
+    <div
+      className="card"
+      style={{
+        marginTop: 24,
+        padding: "1.5rem",
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        borderRadius: 16,
+        position: "relative",
+        overflow: "hidden",
+      }}
+    >
+      {/* top accent line */}
+      <div
+        style={{
+          position: "absolute",
+          top: 0,
+          left: 0,
+          right: 0,
+          height: 2,
+          background: "linear-gradient(90deg, transparent, var(--accent), transparent)",
+        }}
+      />
+      <p
+        style={{
+          marginBottom: "1.25rem",
+          color: "var(--accent)",
+          fontWeight: 700,
+          fontSize: "0.85rem",
+          letterSpacing: "0.08em",
+          fontFamily: "'Space Grotesk', sans-serif",
+        }}
+      >
+        {lang === "zh" ? "▸ 分析結果 Top 5" : "▸ Analysis Result Top 5"}
       </p>
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.9rem" }}>
         {top5.map((r, i) => (
-          <div key={r.character.name}>
-            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.25rem" }}>
-              <span style={{ fontSize: "0.85rem", fontWeight: 600, color: "var(--text-primary)" }}>
-                {r.character.emoji} {r.character.name}
-              </span>
-              <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--accent)" }}>
+          <div key={r.character.name} style={{ animationDelay: `${i * 120}ms` }} className="bar-row">
+            <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "0.35rem", alignItems: "center" }}>
+              <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                <span style={{ fontSize: "1rem" }}>{medals[i]}</span>
+                <span style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--text-primary)", fontFamily: "'Space Grotesk', sans-serif" }}>
+                  {r.character.emoji} {r.character.name}
+                </span>
+              </div>
+              <span style={{ fontSize: "0.95rem", fontWeight: 800, color: textColors[i], fontFamily: "'IBM Plex Mono', monospace" }}>
                 {r.pct}%
               </span>
             </div>
-            <div style={{ height: "8px", background: "rgba(0,229,200,0.1)", borderRadius: "99px", overflow: "hidden" }}>
+            <div style={{ height: "10px", background: "rgba(255,255,255,0.05)", borderRadius: "99px", overflow: "hidden" }}>
               <div
                 style={{
                   width: `${r.pct}%`,
                   height: "100%",
-                  background: `linear-gradient(90deg, #00E5C8 ${100 - i * 15}%, #00b8a0 ${100 - i * 15}%)`,
+                  background: barColors[i],
                   borderRadius: "99px",
-                  transition: "width 0.6s ease",
+                  transition: `width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) ${i * 100}ms`,
+                  boxShadow: i < 3 ? `0 0 10px ${textColors[i]}66` : "none",
                 }}
               />
             </div>
           </div>
         ))}
       </div>
-      <p style={{ marginTop: "1rem", fontSize: "0.75rem", color: "var(--text-secondary)", textAlign: "right" }}>
-        {lang === "zh" ? "總匹配率" : "Total match"}: {top5.reduce((a, r) => a + r.pct, 0)}%
-      </p>
+      <div style={{ marginTop: "1.25rem", paddingTop: "0.75rem", borderTop: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <span style={{ fontSize: "0.75rem", color: "var(--text-muted)" }}>
+          {lang === "zh" ? "總匹配率" : "Total match"}
+        </span>
+        <span style={{ fontSize: "0.85rem", fontWeight: 700, color: "var(--accent)", fontFamily: "'IBM Plex Mono', monospace" }}>
+          {top5.reduce((a, r) => a + r.pct, 0)}%
+        </span>
+      </div>
     </div>
   );
 }
@@ -131,10 +181,27 @@ function AnalyzerSelector({
   const selected = analyzers.find((a) => a.id === selectedId) || analyzers[0];
   return (
     <div style={{ marginBottom: "1.25rem" }}>
-      <label style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: "var(--text-secondary)", marginBottom: "0.5rem" }}>
+      <label
+        style={{
+          display: "block",
+          fontSize: "0.8rem",
+          fontWeight: 600,
+          color: "var(--text-secondary)",
+          marginBottom: "0.5rem",
+        }}
+      >
         {lang === "zh" ? "選擇分析器" : "Select Analyzer"}
       </label>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+
+      {/* Desktop: pill buttons */}
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          gap: "0.5rem",
+        }}
+        className="analyzer-pills"
+      >
         {analyzers.map((a) => (
           <button
             key={a.id}
@@ -159,8 +226,42 @@ function AnalyzerSelector({
           </button>
         ))}
       </div>
+
+      {/* Mobile: native select dropdown */}
+      <div className="analyzer-dropdown-wrap">
+        <select
+          value={selectedId}
+          onChange={(e) => onChange(e.target.value)}
+          style={{
+            width: "100%",
+            padding: "0.65rem 1rem",
+            background: "var(--bg-surface)",
+            border: "1px solid var(--border-strong)",
+            borderRadius: "10px",
+            color: "var(--text-primary)",
+            fontSize: "0.9rem",
+            fontFamily: "'Inter', sans-serif",
+            outline: "none",
+            cursor: "pointer",
+            appearance: "none",
+            WebkitAppearance: "none",
+            backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2350AF95' d='M6 8L1 3h10z'/%3E%3C/svg%3E")`,
+            backgroundRepeat: "no-repeat",
+            backgroundPosition: "right 12px center",
+            paddingRight: "2.5rem",
+          }}
+        >
+          {analyzers.map((a) => (
+            <option key={a.id} value={a.id}>
+              {a.emoji} {a.name} — {a.characters.length} {lang === "zh" ? "角色" : "chars"}
+            </option>
+          ))}
+        </select>
+      </div>
+
       <p style={{ marginTop: "0.5rem", fontSize: "0.75rem", color: "var(--text-secondary)" }}>
-        {selected.emoji} {selected.name} · {selected.characters.length} {lang === "zh" ? "角色" : "characters"}
+        {selected.emoji} {selected.name} · {selected.characters.length}{" "}
+        {lang === "zh" ? "角色" : "characters"}
       </p>
     </div>
   );
