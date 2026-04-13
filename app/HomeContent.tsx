@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from "react";
 import { useSearchParams } from "next/navigation";
-import { DEFAULT_ANALYZERS, Analyzer } from "./lib/analyzers";
+import { DEFAULT_ANALYZERS, customAnalyzersStorageKey, Analyzer } from "./lib/analyzers";
 
 type Lang = "zh" | "en";
 
@@ -273,10 +273,31 @@ export default function HomeContent() {
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [results, setResults] = useState<AnalysisResult[] | null>(null);
   const [selectedAnalyzerId, setSelectedAnalyzerId] = useState(DEFAULT_ANALYZERS[0].id);
+  const [customAnalyzers, setCustomAnalyzers] = useState<Analyzer[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const searchParams = useSearchParams();
-  const activeTab = searchParams.get("tab") as "create" | "leaderboard" | null;
-  const selectedAnalyzer = DEFAULT_ANALYZERS.find((a) => a.id === selectedAnalyzerId) || DEFAULT_ANALYZERS[0];
+
+  // Load custom analyzers from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(customAnalyzersStorageKey);
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed)) {
+          setCustomAnalyzers(parsed);
+          // Auto-select first custom analyzer if no default found
+          if (parsed.length > 0 && !DEFAULT_ANALYZERS.find((a) => a.id === selectedAnalyzerId)) {
+            setSelectedAnalyzerId(parsed[0].id);
+          }
+        }
+      }
+    } catch {
+      // ignore localStorage read errors
+    }
+  }, []);
+
+  const allAnalyzers = [...DEFAULT_ANALYZERS, ...customAnalyzers];
+  const selectedAnalyzer = allAnalyzers.find((a) => a.id === selectedAnalyzerId) || DEFAULT_ANALYZERS[0];
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -354,7 +375,7 @@ export default function HomeContent() {
             </p>
 
             <AnalyzerSelector
-              analyzers={DEFAULT_ANALYZERS}
+              analyzers={allAnalyzers}
               selectedId={selectedAnalyzerId}
               onChange={setSelectedAnalyzerId}
               lang={lang}
