@@ -44,9 +44,9 @@ function Header({
         <div className="logo">
           <div className="logo-icon">
             <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-              <circle cx="14" cy="14" r="13" stroke="#00E5C8" strokeWidth="1.5" />
-              <circle cx="14" cy="14" r="7" fill="#00E5C8" opacity="0.15" />
-              <circle cx="14" cy="14" r="3" fill="#00E5C8" />
+              <circle cx="14" cy="14" r="13" stroke="#50AF95" strokeWidth="1.5" />
+              <circle cx="14" cy="14" r="7" fill="#50AF95" opacity="0.15" />
+              <circle cx="14" cy="14" r="3" fill="#50AF95" />
             </svg>
           </div>
           <span className="logo-text">
@@ -406,6 +406,18 @@ export default function HomeContent() {
           </div>
         </section>
       </main>
+
+      <footer className="site-footer">
+        <div className="footer-inner">
+          <div className="footer-brand">
+            <span style={{ fontSize: "1rem" }}>⚡</span>
+            <span>Anime Character Analyzer</span>
+          </div>
+          <div className="footer-tagline">
+            {lang === "zh" ? "用名字探索你的動漫角色" : "Find your anime character by name"}
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
