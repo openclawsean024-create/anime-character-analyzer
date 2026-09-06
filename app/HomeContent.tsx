@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useRef } from "react";
+import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { DEFAULT_ANALYZERS, customAnalyzersStorageKey, Analyzer } from "./lib/analyzers";
 
@@ -55,15 +56,15 @@ function Header({
           </span>
         </div>
         <nav className="nav-links">
-          <a href="/" className={`nav-link${active === "/" ? " active" : ""}`}>
+          <Link href="/" className={`nav-link${active === "/" ? " active" : ""}`}>
             {lang === "zh" ? "分析" : "Analyze"}
-          </a>
-          <a href="/create" className={`nav-link${active === "/create" ? " active" : ""}`}>
+          </Link>
+          <Link href="/create" className={`nav-link${active === "/create" ? " active" : ""}`}>
             {lang === "zh" ? "創建" : "Create"}
-          </a>
-          <a href="/leaderboard" className={`nav-link${active === "/leaderboard" ? " active" : ""}`}>
+          </Link>
+          <Link href="/leaderboard" className={`nav-link${active === "/leaderboard" ? " active" : ""}`}>
             {lang === "zh" ? "排行榜" : "Ranking"}
-          </a>
+          </Link>
         </nav>
         <div className="lang-toggle">
           <button className={`lang-btn ${lang === "zh" ? "active" : ""}`} onClick={() => onLang("zh")}>
@@ -279,6 +280,10 @@ export default function HomeContent() {
 
   // Load custom analyzers from localStorage
   useEffect(() => {
+    // Read from localStorage on mount; intentional setState in effect for client-only state.
+    // React 19's set-state-in-effect rule is suppressed here because localStorage is unavailable
+    // during SSR — we must defer the read until the client mounts to avoid hydration mismatch.
+    /* eslint-disable react-hooks/set-state-in-effect */
     try {
       const stored = localStorage.getItem(customAnalyzersStorageKey);
       if (stored) {
@@ -294,6 +299,7 @@ export default function HomeContent() {
     } catch {
       // ignore localStorage read errors
     }
+    /* eslint-enable react-hooks/set-state-in-effect */
   }, []);
 
   const allAnalyzers = [...DEFAULT_ANALYZERS, ...customAnalyzers];

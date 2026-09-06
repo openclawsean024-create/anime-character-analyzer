@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Repo-fleet additions:
+    "test-app.js", // Playwright E2E script (not a TS/TSX file, not part of app build)
   ]),
 ]);
 

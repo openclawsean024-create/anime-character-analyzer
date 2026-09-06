@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 
 type Lang = "zh" | "en";
 
@@ -72,15 +73,15 @@ export default function CreatePage() {
                 <circle cx="14" cy="14" r="3" fill="#50AF95" />
               </svg>
             </div>
-            <a href="/" className="logo-text">
+            <Link href="/" className="logo-text">
               <span className="logo-primary">Anime</span>
               <span className="logo-secondary"> Analyzer</span>
-            </a>
+            </Link>
           </div>
           <nav className="nav-links">
-            <a href="/" className="nav-link">{lang === "zh" ? "分析" : "Analyze"}</a>
-            <a href="/create" className="nav-link active">{lang === "zh" ? "創建" : "Create"}</a>
-            <a href="/leaderboard" className="nav-link">{lang === "zh" ? "排行榜" : "Ranking"}</a>
+            <Link href="/" className="nav-link">{lang === "zh" ? "分析" : "Analyze"}</Link>
+            <Link href="/create" className="nav-link active">{lang === "zh" ? "創建" : "Create"}</Link>
+            <Link href="/leaderboard" className="nav-link">{lang === "zh" ? "排行榜" : "Ranking"}</Link>
           </nav>
           <div className="lang-toggle">
             <button className={`lang-btn ${lang === "zh" ? "active" : ""}`} onClick={() => setLang("zh")}>中文</button>
@@ -116,9 +117,9 @@ export default function CreatePage() {
                 <div style={{ fontWeight: 600, marginBottom: 4 }}>
                   {lang === "zh" ? "分析器已建立！" : "Analyzer created!"}
                 </div>
-                <a href="/" style={{ color: "inherit", textDecoration: "underline" }}>
+                <Link href="/" style={{ color: "inherit", textDecoration: "underline" }}>
                   → {lang === "zh" ? "回到首頁使用" : "Go back to use it"}
-                </a>
+                </Link>
               </div>
             </div>
           )}
@@ -256,9 +257,9 @@ export default function CreatePage() {
           </button>
 
           <div style={{ textAlign: "center" }}>
-            <a href="/" className="back-link">
+            <Link href="/" className="back-link">
               ← {lang === "zh" ? "返回首頁" : "Back to Analyze"}
-            </a>
+            </Link>
           </div>
         </div>
       </main>
